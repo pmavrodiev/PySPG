@@ -11,7 +11,8 @@ FORTRAN         = gfortran
 CC              = gcc
 LD              = g++
 CTT             = ~/opt/bin/ctt.py
-LDFLAGS         = -L${BASEDIR}/lib -lm -ldranxor -lwrappers  -lgauges -lgenerator -lnetworks -lstochastic -lutil -linteraction -lmeasures -lmcsys -ldynsys
+LDFLAGS         = -L${BASEDIR}/lib -lm -ldranxor
+# -lwrappers  -lgauges -lgenerator -lnetworks -lstochastic -lutil -linteraction -lmeasures -lmcsys -ldynsys
 RM              = rm
 SHELL           = /bin/bash
 INCLUDES        = -I${BASEDIR}/include
@@ -20,7 +21,7 @@ EXEPREFIX       = ctx-
 OBJS            = base.o main.o 
 
 .PHONY: clean all install
-
+.PRECIOUS: base.cxx #Pavlin: want to keep it
 
 all:  ${EXEPREFIX}${TARGET}${EXEEXT}
 
