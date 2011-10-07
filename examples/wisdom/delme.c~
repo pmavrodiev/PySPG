@@ -1,0 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <gsl/gsl_statistics_double.h>
+
+int main(int argc, char **argv) {
+  printf("Hello World\n");
+  double data[5]={17.2, 18.1, 16.5, 18.3, 12.6};
+  printf("%f\n",gsl_stats_mean(data, 1, 5));
+  return 0;
+}
