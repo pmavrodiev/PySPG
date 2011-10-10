@@ -1,3 +1,4 @@
+choice:string:regime:"AGGR","FULL","NO":information regime
 val:double:alpha:1.0:strength of social influence
 val:double:beta:1.0:strength of individual conviction
 val:double:deltat:0.01:time step for the simulation

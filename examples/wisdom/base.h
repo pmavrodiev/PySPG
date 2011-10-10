@@ -34,6 +34,8 @@ namespace CTGlobal
   extern int verbosityLevel /* = 0*/;
   extern bool quietRun /* = false*/;
 
+//:::~  information regime
+extern std::string regime /* =  "AGGR" */ ;
 //:::~  strength of social influence
 extern  double alpha /* =  1.0 */ ;
 //:::~  strength of individual conviction

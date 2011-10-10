@@ -18,6 +18,8 @@ namespace CTGlobal
   bool quietRun = false;
   std::string prog_name = "" ;
 
+//:::~  information regime
+std::string regime = "AGGR" ;
 //:::~  strength of social influence
 double alpha = 1.0 ;
 //:::~  strength of individual conviction
@@ -123,7 +125,7 @@ void CTGlobal::input_variables(std::istream &fin)
  while( (!fin.eof()) &&  (foo != "end") )
  {
     
-  if (  (foo !="alpha") && (foo !="beta") && (foo !="deltat") && (foo !="t") && (foo !="filename") && (foo !="N") && (foo !="Dn") && (foo !="lnTruth") && (foo !="randomseed")  )
+  if (  (foo !="regime") && (foo !="alpha") && (foo !="beta") && (foo !="deltat") && (foo !="t") && (foo !="filename") && (foo !="N") && (foo !="Dn") && (foo !="lnTruth") && (foo !="randomseed")  )
   {  
     std::cerr << " +  {ctt - ERROR} command " <<  foo << " not understood";
     std::cerr << std::endl;
@@ -131,6 +133,20 @@ void CTGlobal::input_variables(std::istream &fin)
     
     
   }  
+  if (foo == "regime")
+  {
+    {
+      fin >>  regime ;
+      if (  (regime!="AGGR")&&(regime!="FULL")&&(regime!="NO") )
+      {
+        std::cerr << " +  {ctt - ERROR} '" << regime  << "' not between possible values of regime"  << std::endl;
+        std::cerr << " +  {ctt - ERROR} Possible values are: " <<  "AGGR"<< " " <<"FULL"<< " " <<"NO"  << std::endl;
+        exit(EXIT_FAILURE);
+      }
+    }
+    std::cerr << " +  {ctt - SETTING} " << "regime = " << regime  << std::endl;
+
+  }
   if (foo == "alpha")
   {
     fin >>  alpha ;
@@ -211,6 +227,10 @@ void CTGlobal::help_available()
 {
 
  
+   std::cerr << "regime := tipo  string "  << std::endl ;
+   std::cerr << "--> information regime" << std::endl;
+   std::cerr       << "    Possible values are: " <<  "AGGR"<< " " <<"FULL"<< " " <<"NO"  << std::endl ;
+
    std::cerr << "alpha := tipo  double "  << std::endl ;
    std::cerr << "--> strength of social influence" << std::endl;
    std::cerr << "    Valor por defecto : 1.0"  << std::endl ;
