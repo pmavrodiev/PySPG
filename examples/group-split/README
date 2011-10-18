@@ -1,0 +1,28 @@
+Simulation approach is as follows:
+
+I. For each tripple {sigma1, sigma2, n2} sample n2/N RVs from N(0,sigma2) and n1/N RVs from N(0,sigma1) ; n1+n2=1, RV = random variable
+
+   I.1) Control case: let all agents interact without group splitting and record the long term standard deviation of the population
+   		      together with the final vector of estimates
+
+   I.2) Test case: 
+   	I.2.1) Agents interact only within their respective groups. Wait until stable state
+	I.2.2) Record the average opinions in the two groups (x1bar and x2bar) as a proxy for representative agents
+	I.2.3) Let x1bar and x2bar interact and wait for their stationary states. Record x1bar-st and x2bar-st
+
+
+
+Comments:
+ - interaction means coupling to the arithmetic average
+ 
+ - record after one realization:
+   -- S1 = {x-init,x-st} for I.1)					; x-init/x-st := initial/final vector of all estimates
+   -- S2 = {x-init1,x-init2,x-st1,x-st2,x1bar-st,x2bar-st} for I.2)	; x-initK := initial vector of estimates for group K. 
+      							       		; xKbar-st := final value for the arithmetic average of group K, 
+									  	      after it has interacted with the average of another 
+									;	      group. In other words this is the stationary value 
+									;	      of the opinion of the representative agent from 
+									;	      group K
+
+ - after M realizations we'll have M times the sets S1 and S2.
+   
