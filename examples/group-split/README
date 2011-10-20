@@ -1,6 +1,6 @@
 Simulation approach is as follows:
 
-I. For each tripple {sigma1, sigma2, n2} sample n2/N RVs from N(0,sigma2) and n1/N RVs from N(0,sigma1) ; n1+n2=1, RV = random variable
+I. For each tripple {sigma1=1, sigma2, n2} sample n2*N RVs from N(0,sigma2) and n1*N RVs from N(0,sigma1) ; n1+n2=1, RV = random variable
 
    I.1) Control case: let all agents interact without group splitting and record the long term standard deviation of the population
    		      together with the final vector of estimates
@@ -26,3 +26,10 @@ Comments:
 
  - after M realizations we'll have M times the sets S1 and S2.
    
+ - in the parameters file: {sigma1=1, sigma2, N, n2, M}			; M - number of desired realizations, N - number of agents
+      	  	     	   	      	      	     			; n2 - relative size of the second group. MAKE sure that
+									; n2*M is an integer
+
+ - output files: gsplit_<sigma1=1>_<sigma2>_<n2>_<m>_<c|t>  		; sigma1, sigma2 and m are replaced by their numerical values
+   	  	 							; m - number of current realization
+									; c|t - c for control case and t for test case

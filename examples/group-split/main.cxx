@@ -1,7 +1,7 @@
 /***************************************************************************
                           main.cpp  -  description
                              -------------------
-    begin                : Fri Oct 7 2011
+    begin                : Wed Oct 19 2011
     copyright            : (C) 2011 by Pavlin Mavrodiev
     email                : pmavrodiev@ethz.ch
  ***************************************************************************/
@@ -24,32 +24,32 @@
 using namespace std;
 using namespace CTGlobal;
 
-double *estimates; //store estimates at time t
-double *initial_estimates; //store initial estimates
-
-/*read "filename" from base.ct containing the initial estimates*/
-void read_initial_estimates() {
-  using namespace CTGlobal;
-  FILE *inFile=NULL;
-  double estimate=0;
-  int counter = 0;
-  estimates = (double *) calloc(N,sizeof(double));
-  if (estimates==NULL)
-    perror("read_initial_estimates(): failed to allocate memory to estimates\n");
-  initial_estimates = (double *) calloc(N,sizeof(double));
-  if (initial_estimates==NULL)
-    perror("read_initial_estimates(): failed to allocate memory to initial_estimates\n");
-   inFile = fopen(filename.c_str(),"r");
-  if (inFile == NULL) perror("read_initial_estimates():");
-  
-  while ((fscanf(inFile,"%lf",&estimate) == 1) && (counter<N)) {
-    estimates[counter] = estimate;
-    initial_estimates[counter++] = estimate;
-  }
-  
-  fclose(inFile);
-}
-
+//double *estimates; //store estimates at time t
+//double *initial_estimates; //store initial estimates
+//
+///*read "filename" from base.ct containing the initial estimates*/
+//void read_initial_estimates() {
+//  using namespace CTGlobal;
+//  FILE *inFile=NULL;
+//  double estimate=0;
+//  int counter = 0;
+//  estimates = (double *) calloc(N,sizeof(double));
+//  if (estimates==NULL)
+//    perror("read_initial_estimates(): failed to allocate memory to estimates\n");
+//  initial_estimates = (double *) calloc(N,sizeof(double));
+//  if (initial_estimates==NULL)
+//    perror("read_initial_estimates(): failed to allocate memory to initial_estimates\n");
+//   inFile = fopen(filename.c_str(),"r");
+//  if (inFile == NULL) perror("read_initial_estimates():");
+//  
+//  while ((fscanf(inFile,"%lf",&estimate) == 1) && (counter<N)) {
+//    estimates[counter] = estimate;
+//    initial_estimates[counter++] = estimate;
+//  }
+//  
+//  fclose(inFile);
+//}
+//
 
 void weigth(double **weigthmatrix, double **currentestimates, short term, double **k1, double **k2, double **k3) {
   
@@ -87,14 +87,14 @@ void weigth(double **weigthmatrix, double **currentestimates, short term, double
 
 
 /*** AGGREGATE REGIMR ***/
-void run_aggr() {
+void run_aggr(int *size) {
   /* Euler: x_i(t+1)=x_i(t)+deltat*delta_i_t */
   double delta_i_t=0,mean=0; 
   /*loop over the whole time period*/
   for (long i=0; i<t; i++){
     /*simulate the dynamics of all agents*/
-    for (unsigned j=0; j<N; j++) {
-      mean=gsl_stats_mean(estimates,1,N);
+    for (unsigned j=0; j<*size; j++) {
+      mean=gsl_stats_mean(estimates,1,*size);
       double randnum = rt_rand_gaussian()*0.001;
       delta_i_t = deltat*(alpha*(mean-estimates[j])+beta*(initial_estimates[j]-estimates[j]))+sqrt(2*Dn*deltat)*randnum;
       estimates[j] += delta_i_t;
@@ -103,12 +103,12 @@ void run_aggr() {
 }
 
 /***FULL INFO REGIME ***/
-void run_full() {
-  double *weigth_matrix = (double *) calloc(N*(N-1)/2,sizeof(double));
-  double *k1 = (double *) calloc(N,sizeof(double));
-  double *k2 = (double *) calloc(N,sizeof(double));
-  double *k3 = (double *) calloc(N,sizeof(double));
-  double *k4 = (double *) calloc(N,sizeof(double));
+void run_full(int *size) {
+  double *weigth_matrix = (double *) calloc((*size)*((*size)-1)/2,sizeof(double));
+  double *k1 = (double *) calloc((*size),sizeof(double));
+  double *k2 = (double *) calloc((*size),sizeof(double));
+  double *k3 = (double *) calloc((*size),sizeof(double));
+  double *k4 = (double *) calloc((*size),sizeof(double));
   double xi,xj,normconst,K1,K2,K3,K4,noise;
   int index;
 
@@ -127,20 +127,20 @@ void run_full() {
     /*calculate the weigth matrix at level k1*/
     weigth(&weigth_matrix,&estimates,0,&k1,&k2,&k3);
     /*calculate the k1 vector for all agents*/
-    for (unsigned i=0; i<N; i++) {
+    for (unsigned i=0; i<(*size); i++) {
       xi=estimates[i];
       /*calculate the normalization constant for agent i*/
       normconst=0.0;
-      for (unsigned j=0; j<N; j++) 
+      for (unsigned j=0; j<(*size); j++) 
 	normconst += 1.0 / (1+exp(fabs(estimates[j]-xi)/ alpha));
       normconst = pow(normconst,-1);
       /*fill the k1 vector with social influence only*/
       K1=0;
-      for (unsigned j=0; j<N; j++) {
+      for (unsigned j=0; j<(*size); j++) {
 	if (j != i) {
 	  xj=estimates[j];
-	  index = ((2*N-i-1)*i) / 2 - i + j-1;
-	  if (i>j) index = ((2*N-j-1)*j) / 2 - j + i-1;
+	  index = ((2*(*size)-i-1)*i) / 2 - i + j-1;
+	  if (i>j) index = ((2*(*size)-j-1)*j) / 2 - j + i-1;
 	  K1 += weigth_matrix[index]*(xj-xi);
 	}
       }
@@ -157,19 +157,19 @@ void run_full() {
    /*calculate the weigth matrix at level k2*/
     weigth(&weigth_matrix,&estimates,1,&k1,&k2,&k3);
     /*calculate the k2 vector for all agents*/
-    for (unsigned i=0; i<N; i++) {
+    for (unsigned i=0; i<(*size); i++) {
       xi=estimates[i];
       /*calculate the normalization constant for agent i*/
       normconst=0.0;
-      for (unsigned j=0; j<N; j++) 
+      for (unsigned j=0; j<(*size); j++) 
 	normconst += 1.0 / (1+exp(fabs(estimates[j]-xi+0.5*(k1[j]-k1[i]))/ alpha));
       normconst = pow(normconst,-1);
       /*fill the k2 vector with social influence only*/
-      for (unsigned j=0; j<N; j++) {
+      for (unsigned j=0; j<(*size); j++) {
 	if (j != i) {
 	  xj=estimates[j];
-	  index = ((2*N-i-1)*i) / 2 - i + j-1;
-	  if (i>j) index = ((2*N-j-1)*j) / 2 - j + i-1;
+	  index = ((2*(*size)-i-1)*i) / 2 - i + j-1;
+	  if (i>j) index = ((2*(*size)-j-1)*j) / 2 - j + i-1;
 	  k2[i] += weigth_matrix[index]*(estimates[j]-estimates[i]+0.5*(k1[j]-k1[i]));
 	}
       }
@@ -185,19 +185,19 @@ void run_full() {
    /*calculate the weigth matrix at level k3*/
     weigth(&weigth_matrix,&estimates,2,&k1,&k2,&k3);
     /*calculate the k3 vector for all agents*/
-    for (unsigned i=0; i<N; i++) {
+    for (unsigned i=0; i<(*size); i++) {
       xi=estimates[i];
       /*calculate the normalization constant for agent i*/
       normconst=0.0;
-      for (unsigned j=0; j<N; j++) 
+      for (unsigned j=0; j<(*size); j++) 
 	normconst += 1.0 / (1+exp(fabs(estimates[j]-xi+0.5*(k2[j]-k2[i])) / alpha ));
       normconst = pow(normconst,-1);
       /*fill the k3 vector with social influence only*/
-      for (unsigned j=0; j<N; j++) {
+      for (unsigned j=0; j<(*size); j++) {
 	if (j != i) {
 	  xj=estimates[j];
-	  index = ((2*N-i-1)*i) / 2 - i + j-1;
-	  if (i>j) index = ((2*N-j-1)*j) / 2 - j + i-1;
+	  index = ((2*(*size)-i-1)*i) / 2 - i + j-1;
+	  if (i>j) index = ((2*(*size)-j-1)*j) / 2 - j + i-1;
 	  k3[i] += weigth_matrix[index]*(estimates[j]-estimates[i]+0.5*(k2[j]-k2[i]));
 	}
       }
@@ -212,19 +212,19 @@ void run_full() {
    /*calculate the weigth matrix at level k4*/
     weigth(&weigth_matrix,&estimates,3,&k1,&k2,&k3);
     /*calculate the k4 vector for all agents*/
-    for (unsigned i=0; i<N; i++) {
+    for (unsigned i=0; i<(*size); i++) {
       xi=estimates[i];
       /*calculate the normalization constant for agent i*/
       normconst=0.0;
-      for (unsigned j=0; j<N; j++) 
+      for (unsigned j=0; j<(*size); j++) 
 	normconst += 1.0 / (1+exp(fabs(estimates[j]-xi+k3[j]-k3[i])/alpha));
       normconst = pow(normconst,-1);
       /*fill the k4 vector with social influence only*/
-      for (unsigned j=0; j<N; j++) {
+      for (unsigned j=0; j<(*size); j++) {
 	if (j != i) {
 	  xj=estimates[j];
-	  index = ((2*N-i-1)*i) / 2 - i + j-1;
-	  if (i>j) index = ((2*N-j-1)*j) / 2 - j + i-1;
+	  index = ((2*(*size)-i-1)*i) / 2 - i + j-1;
+	  if (i>j) index = ((2*(*size)-j-1)*j) / 2 - j + i-1;
 	  k4[i] += weigth_matrix[index]*(estimates[j]-estimates[i]+k3[j]-k3[i]);
 	}
       }
@@ -238,7 +238,7 @@ void run_full() {
     /*done with k4*/
 
     /* update estimates*/
-    for (unsigned i=0; i<N; i++) {
+    for (unsigned i=0; i<(*size); i++) {
       estimates[i] += (1.0 / 6.0)*(k1[i]+2*k2[i]+2*k3[i]+k4[i]);
     }
 
@@ -255,49 +255,27 @@ int main(int argc, char *argv[])
 {
  
   initialize_program( argc,  argv );
-  read_initial_estimates();
-  double collective_error = 0;
-  double group_diversity = 0;
-  double woc=0;
-  
+  double *estimates, *estimates_group1, *estimates_group2;
+  short success = 0;
+
   if (regime == "AGGR")
-    run_aggr();
+    run_aggr(&N);
   else if (regime == "FULL")
-    run_full();
+    run_full(&N);
   else 
     {
       printf("main(): Unrecognized regime %s\n",regime.c_str());
       perror("");
     }
-  /*calculate the final collective error and group diversity*/
-  /*log of the estimates. how much I miss R's vectorization */
-  double *dummy = (double *) malloc(N*sizeof(double));
-  for (unsigned j=0; j<N; j++) 
-    dummy[j] = log(estimates[j]);
 
-  double mean=gsl_stats_mean(dummy,1,N);
-  collective_error = pow(lnTruth-mean,2);
-  group_diversity =  gsl_stats_variance_m(dummy,1,N,mean);
-  free(dummy);
 
-  /*calculate the final WOC indicator*/
-  sort(&estimates[0], &estimates[N]);
-  int start = ceil(N/2);
-  while (start > 1) {
-    if ((estimates[start-1] <= exp(lnTruth)) && (estimates[N-start] >= exp(lnTruth))) {
-      woc = (double) start;
-      break;
-    }	 	
-    start--;
-  }
-  /***************/
 
-  std::cout << collective_error << "\t";
-  std::cout << group_diversity << "\t";
-  std::cout << woc << std::endl;
+
+  cout << success << endl;
 
   free(estimates);
-  free(initial_estimates);  
+  free(estimates_group1);
+  free(estimates_group2);
   return EXIT_SUCCESS;
   
 }

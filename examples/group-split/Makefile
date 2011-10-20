@@ -1,6 +1,6 @@
 # put common definitions in here
 
-TARGET          = wisdom
+TARGET          = gsplit
 
 CONFIGFILE      = 
 
