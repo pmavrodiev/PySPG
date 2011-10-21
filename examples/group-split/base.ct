@@ -1,12 +1,13 @@
 @conditional_file_out dynamics
 choice:string:regime:"AGGR","FULL","NO":information regime
-val:double:sigma1:1.0:std of group 1
-val:double:sigma2:1.0:std of group 2
+choice:string:control_case:"c","t":(c)ontrol case (no splitting) or (t)est case (splitting)
+val:double:sigma1:1.0:std of group one
+val:double:sigma2:1.0:std of group two
 val:double:alpha:1.0:strength of social influence
 val:double:beta:1.0:strength of individual conviction
 val:double:deltat:0.01:time step for the simulation
-val:long:t:300:number of time steps for interaction
+val:int:T:300:number of time steps for interaction
 val:int:N:100:number of agents
 val:int:M:100:number of realizations
-val:double:n2:relative size of the second group
+val:double:n2:0.01:relative size of the second group
 val:double:Dn:0.5:noise diffusion coefficient

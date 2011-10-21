@@ -10,7 +10,7 @@ CPPFLAGS        = -O2
 FORTRAN         = gfortran
 CC              = gcc
 LD              = g++
-CTT             = ~/opt/bin/ctt.py
+CTT             = ${BASEDIR}/bin/ctt.py
 LDFLAGS         = -L${BASEDIR}/lib -lm -ldranxor -lgsl -lgslcblas
 # -lwrappers  -lgauges -lgenerator -lnetworks -lstochastic -lutil -linteraction -lmeasures -lmcsys -ldynsys
 RM              = rm

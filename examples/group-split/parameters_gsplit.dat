@@ -1,0 +1,12 @@
+@execute ctx-gsplit.p4
+:store_dynamics
+:store_dynamics_filename {M}_{control_case}_{alpha}_{beta}_{sigma2}_{n2}.pmout
+:deltat 0.01
+:regime AGGR
++M 1 100 1
+.control_case c t
+:alpha 1.0 
+:beta 2.0 
+:sigma1 1.0
++sigma2 0.01 3.0 0.1
++n2 0.01 0.99 0.01

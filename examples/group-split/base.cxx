@@ -12,34 +12,47 @@
 namespace CTGlobal
 {
 
-  std::string filein = "input.wisdom";
+  std::string filein = "input.gsplit";
 
   int verbosityLevel  = 0;
   bool quietRun = false;
   std::string prog_name = "" ;
 
+//:::~  sets whether to store the dynamics
+bool  store_dynamics = false ;
+//:::~  file name to store the dynamics
+std::string store_dynamics_filename = "dynamics.out" ;
 //:::~  information regime
 std::string regime = "AGGR" ;
+//:::~  (c)ontrol case (no splitting) or (t)est case (splitting)
+std::string control_case = "c" ;
+//:::~  std of group one
+double sigma1 = 1.0 ;
+//:::~  std of group two
+double sigma2 = 1.0 ;
 //:::~  strength of social influence
 double alpha = 1.0 ;
 //:::~  strength of individual conviction
 double beta = 1.0 ;
 //:::~  time step for the simulation
 double deltat = 0.01 ;
-//:::~  number of time steps in the simulation
-long t = 300 ;
-//:::~  initial estimates (fig 4 top-left) are stored here
-std::string filename = "wisdom.in" ;
+//:::~  number of time steps for interaction
+int T = 300 ;
 //:::~  number of agents
 int N = 100 ;
+//:::~  number of realizations
+int M = 100 ;
+//:::~  relative size of the second group
+double n2 = 0.01 ;
 //:::~  noise diffusion coefficient
 double Dn = 0.5 ;
-//:::~  the logarithm of the Truth
-double lnTruth = -2.0 ;
 //:::~  semilla de los numeros aleatorios
 long randomseed = 0 ;
 
 // from backends
+
+
+std::fstream *f_dynamics_out = 0;
 
 };
 
@@ -95,6 +108,17 @@ void CTGlobal::initialize_program(int &argc, char** & argv){
   } 
 } 
 
+if(store_dynamics ){
+    
+    f_dynamics_out = new std::fstream (store_dynamics_filename.c_str(),std::ios::out | std::ios::app );
+    if( f_dynamics_out->fail()  ) {
+      std::cerr << "< " << argv[0] << " - ERROR > " ;
+      std::cerr << "opening file: '" << store_dynamics_filename ;
+      std::cerr << "' for output" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+}
+
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -125,7 +149,7 @@ void CTGlobal::input_variables(std::istream &fin)
  while( (!fin.eof()) &&  (foo != "end") )
  {
     
-  if (  (foo !="regime") && (foo !="alpha") && (foo !="beta") && (foo !="deltat") && (foo !="t") && (foo !="filename") && (foo !="N") && (foo !="Dn") && (foo !="lnTruth") && (foo !="randomseed")  )
+  if (  (foo !="store_dynamics_filename") && (foo !="regime") && (foo !="control_case") && (foo !="sigma1") && (foo !="sigma2") && (foo !="alpha") && (foo !="beta") && (foo !="deltat") && (foo !="T") && (foo !="N") && (foo !="M") && (foo !="n2") && (foo !="Dn") && (foo !="randomseed") && (foo !="store_dynamics")  )
   {  
     std::cerr << " +  {ctt - ERROR} command " <<  foo << " not understood";
     std::cerr << std::endl;
@@ -133,6 +157,17 @@ void CTGlobal::input_variables(std::istream &fin)
     
     
   }  
+  if (foo == "store_dynamics")
+  {
+      store_dynamics =true;
+      std::cerr << " +  {ctt - SETTING} " << "store_dynamics = true" << std::endl;
+  }
+  if (foo == "store_dynamics_filename")
+  {
+    fin >>  store_dynamics_filename ;
+      std::cerr << " +  {ctt - SETTING} " << "store_dynamics_filename = " << store_dynamics_filename  << std::endl;
+
+  }
   if (foo == "regime")
   {
     {
@@ -145,6 +180,32 @@ void CTGlobal::input_variables(std::istream &fin)
       }
     }
     std::cerr << " +  {ctt - SETTING} " << "regime = " << regime  << std::endl;
+
+  }
+  if (foo == "control_case")
+  {
+    {
+      fin >>  control_case ;
+      if (  (control_case!="c")&&(control_case!="t") )
+      {
+        std::cerr << " +  {ctt - ERROR} '" << control_case  << "' not between possible values of control_case"  << std::endl;
+        std::cerr << " +  {ctt - ERROR} Possible values are: " <<  "c"<< " " <<"t"  << std::endl;
+        exit(EXIT_FAILURE);
+      }
+    }
+    std::cerr << " +  {ctt - SETTING} " << "control_case = " << control_case  << std::endl;
+
+  }
+  if (foo == "sigma1")
+  {
+    fin >>  sigma1 ;
+      std::cerr << " +  {ctt - SETTING} " << "sigma1 = " << sigma1  << std::endl;
+
+  }
+  if (foo == "sigma2")
+  {
+    fin >>  sigma2 ;
+      std::cerr << " +  {ctt - SETTING} " << "sigma2 = " << sigma2  << std::endl;
 
   }
   if (foo == "alpha")
@@ -165,16 +226,10 @@ void CTGlobal::input_variables(std::istream &fin)
       std::cerr << " +  {ctt - SETTING} " << "deltat = " << deltat  << std::endl;
 
   }
-  if (foo == "t")
+  if (foo == "T")
   {
-    fin >>  t ;
-      std::cerr << " +  {ctt - SETTING} " << "t = " << t  << std::endl;
-
-  }
-  if (foo == "filename")
-  {
-    fin >>  filename ;
-      std::cerr << " +  {ctt - SETTING} " << "filename = " << filename  << std::endl;
+    fin >>  T ;
+      std::cerr << " +  {ctt - SETTING} " << "T = " << T  << std::endl;
 
   }
   if (foo == "N")
@@ -183,16 +238,22 @@ void CTGlobal::input_variables(std::istream &fin)
       std::cerr << " +  {ctt - SETTING} " << "N = " << N  << std::endl;
 
   }
+  if (foo == "M")
+  {
+    fin >>  M ;
+      std::cerr << " +  {ctt - SETTING} " << "M = " << M  << std::endl;
+
+  }
+  if (foo == "n2")
+  {
+    fin >>  n2 ;
+      std::cerr << " +  {ctt - SETTING} " << "n2 = " << n2  << std::endl;
+
+  }
   if (foo == "Dn")
   {
     fin >>  Dn ;
       std::cerr << " +  {ctt - SETTING} " << "Dn = " << Dn  << std::endl;
-
-  }
-  if (foo == "lnTruth")
-  {
-    fin >>  lnTruth ;
-      std::cerr << " +  {ctt - SETTING} " << "lnTruth = " << lnTruth  << std::endl;
 
   }
   if (foo == "randomseed")
@@ -227,9 +288,27 @@ void CTGlobal::help_available()
 {
 
  
+   std::cerr << " store_dynamics := tipo bool "  << std::endl ;
+   std::cerr << "--> sets whether to store the dynamics" << std::endl;
+   std::cerr << "    Valor por defecto : false" << std::endl;    std::cerr << "store_dynamics_filename := tipo  string "  << std::endl ;
+   std::cerr << "--> file name to store the dynamics" << std::endl;
+   std::cerr << "    Valor por defecto : \"dynamics.out\""  << std::endl ;
+
    std::cerr << "regime := tipo  string "  << std::endl ;
    std::cerr << "--> information regime" << std::endl;
    std::cerr       << "    Possible values are: " <<  "AGGR"<< " " <<"FULL"<< " " <<"NO"  << std::endl ;
+
+   std::cerr << "control_case := tipo  string "  << std::endl ;
+   std::cerr << "--> (c)ontrol case (no splitting) or (t)est case (splitting)" << std::endl;
+   std::cerr       << "    Possible values are: " <<  "c"<< " " <<"t"  << std::endl ;
+
+   std::cerr << "sigma1 := tipo  double "  << std::endl ;
+   std::cerr << "--> std of group one" << std::endl;
+   std::cerr << "    Valor por defecto : 1.0"  << std::endl ;
+
+   std::cerr << "sigma2 := tipo  double "  << std::endl ;
+   std::cerr << "--> std of group two" << std::endl;
+   std::cerr << "    Valor por defecto : 1.0"  << std::endl ;
 
    std::cerr << "alpha := tipo  double "  << std::endl ;
    std::cerr << "--> strength of social influence" << std::endl;
@@ -243,25 +322,25 @@ void CTGlobal::help_available()
    std::cerr << "--> time step for the simulation" << std::endl;
    std::cerr << "    Valor por defecto : 0.01"  << std::endl ;
 
-   std::cerr << "t := tipo  long "  << std::endl ;
-   std::cerr << "--> number of time steps in the simulation" << std::endl;
+   std::cerr << "T := tipo  int "  << std::endl ;
+   std::cerr << "--> number of time steps for interaction" << std::endl;
    std::cerr << "    Valor por defecto : 300"  << std::endl ;
-
-   std::cerr << "filename := tipo  string "  << std::endl ;
-   std::cerr << "--> initial estimates (fig 4 top-left) are stored here" << std::endl;
-   std::cerr << "    Valor por defecto : \"wisdom.in\""  << std::endl ;
 
    std::cerr << "N := tipo  int "  << std::endl ;
    std::cerr << "--> number of agents" << std::endl;
    std::cerr << "    Valor por defecto : 100"  << std::endl ;
 
+   std::cerr << "M := tipo  int "  << std::endl ;
+   std::cerr << "--> number of realizations" << std::endl;
+   std::cerr << "    Valor por defecto : 100"  << std::endl ;
+
+   std::cerr << "n2 := tipo  double "  << std::endl ;
+   std::cerr << "--> relative size of the second group" << std::endl;
+   std::cerr << "    Valor por defecto : 0.01"  << std::endl ;
+
    std::cerr << "Dn := tipo  double "  << std::endl ;
    std::cerr << "--> noise diffusion coefficient" << std::endl;
    std::cerr << "    Valor por defecto : 0.5"  << std::endl ;
-
-   std::cerr << "lnTruth := tipo  double "  << std::endl ;
-   std::cerr << "--> the logarithm of the Truth" << std::endl;
-   std::cerr << "    Valor por defecto : -2.0"  << std::endl ;
 
    std::cerr << "randomseed := tipo  long "  << std::endl ;
    std::cerr << "--> semilla de los numeros aleatorios" << std::endl;
