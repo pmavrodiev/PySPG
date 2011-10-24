@@ -11,11 +11,11 @@ FORTRAN         = gfortran
 CC              = gcc
 LD              = g++
 CTT             = ${BASEDIR}/bin/ctt.py
-LDFLAGS         = -L${BASEDIR}/lib -L${HOME}/Programs/libgsl/lib/ -L${HOME}/Programs/random/ -lm -ldranxor -lgsl -lgslcblas
+LDFLAGS         = -L${BASEDIR}/lib -lm -ldranxor -lgsl -lgslcblas
 # -lwrappers  -lgauges -lgenerator -lnetworks -lstochastic -lutil -linteraction -lmeasures -lmcsys -ldynsys
 RM              = rm
 SHELL           = /bin/bash
-INCLUDES        = -I${BASEDIR}/include -I${HOME}/Programs/libgsl/include/
+INCLUDES        = -I${BASEDIR}/include
 EXEEXT          = .p4
 EXEPREFIX       = ctx-
 OBJS            = base.o main.o 
