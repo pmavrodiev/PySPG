@@ -1,0 +1,5 @@
+val:double:deltat:0.01:time step for the simulation
+val:long:t:300:number of time steps in the simulation
+val:string:filename:"rank.in":initial opinions
+val:int:N:100:number of agents
+val:double:lnTruth:-2.0:the logarithm of the Truth

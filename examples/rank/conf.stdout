@@ -1,0 +1,3 @@
+collective_error:help = collective error:texlabel = $\mathcal{E}$
+group_diversity:help = group diversity:texlabel = $\mathcal{D}$
+woc:help = wisdom of crowds indicator:texlabel = $\mathcal{W}$
