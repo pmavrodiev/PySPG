@@ -12,26 +12,39 @@
 namespace CTGlobal
 {
 
-  std::string filein = "input.wisdom";
+  std::string filein = "input.rank";
 
   int verbosityLevel  = 0;
   bool quietRun = false;
   std::string prog_name = "" ;
 
+//:::~  sets whether to store the dynamics
+bool  store_dynamics = false ;
+//:::~  file name to store the dynamics
+std::string store_dynamics_filename = "dynamics.out" ;
 //:::~  time step for the simulation
 double deltat = 0.01 ;
 //:::~  number of time steps in the simulation
 long t = 300 ;
-//:::~  initial opinions
-std::string filename = "rank.in" ;
 //:::~  number of agents
 int N = 100 ;
 //:::~  the logarithm of the Truth
 double lnTruth = -2.0 ;
+//:::~  maximum diffusion for the noise term of the agent ranked last
+double W = 5.0 ;
+//:::~  sensitivity of agents to their ranks
+double eta = 5.0 ;
+//:::~  number of realizations per W,eta pair
+int R = 100 ;
+//:::~  initial opinions
+std::string filename = "rank.in" ;
 //:::~  semilla de los numeros aleatorios
 long randomseed = 0 ;
 
 // from backends
+
+
+std::fstream *f_dynamics_out = 0;
 
 };
 
@@ -87,6 +100,17 @@ void CTGlobal::initialize_program(int &argc, char** & argv){
   } 
 } 
 
+if(store_dynamics ){
+    
+    f_dynamics_out = new std::fstream (store_dynamics_filename.c_str(),std::ios::out | std::ios::app );
+    if( f_dynamics_out->fail()  ) {
+      std::cerr << "< " << argv[0] << " - ERROR > " ;
+      std::cerr << "opening file: '" << store_dynamics_filename ;
+      std::cerr << "' for output" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+}
+
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -117,7 +141,7 @@ void CTGlobal::input_variables(std::istream &fin)
  while( (!fin.eof()) &&  (foo != "end") )
  {
     
-  if (  (foo !="deltat") && (foo !="t") && (foo !="filename") && (foo !="N") && (foo !="lnTruth") && (foo !="randomseed")  )
+  if (  (foo !="store_dynamics_filename") && (foo !="deltat") && (foo !="t") && (foo !="N") && (foo !="lnTruth") && (foo !="W") && (foo !="eta") && (foo !="R") && (foo !="filename") && (foo !="randomseed") && (foo !="store_dynamics")  )
   {  
     std::cerr << " +  {ctt - ERROR} command " <<  foo << " not understood";
     std::cerr << std::endl;
@@ -125,6 +149,17 @@ void CTGlobal::input_variables(std::istream &fin)
     
     
   }  
+  if (foo == "store_dynamics")
+  {
+      store_dynamics =true;
+      std::cerr << " +  {ctt - SETTING} " << "store_dynamics = true" << std::endl;
+  }
+  if (foo == "store_dynamics_filename")
+  {
+    fin >>  store_dynamics_filename ;
+      std::cerr << " +  {ctt - SETTING} " << "store_dynamics_filename = " << store_dynamics_filename  << std::endl;
+
+  }
   if (foo == "deltat")
   {
     fin >>  deltat ;
@@ -137,12 +172,6 @@ void CTGlobal::input_variables(std::istream &fin)
       std::cerr << " +  {ctt - SETTING} " << "t = " << t  << std::endl;
 
   }
-  if (foo == "filename")
-  {
-    fin >>  filename ;
-      std::cerr << " +  {ctt - SETTING} " << "filename = " << filename  << std::endl;
-
-  }
   if (foo == "N")
   {
     fin >>  N ;
@@ -153,6 +182,30 @@ void CTGlobal::input_variables(std::istream &fin)
   {
     fin >>  lnTruth ;
       std::cerr << " +  {ctt - SETTING} " << "lnTruth = " << lnTruth  << std::endl;
+
+  }
+  if (foo == "W")
+  {
+    fin >>  W ;
+      std::cerr << " +  {ctt - SETTING} " << "W = " << W  << std::endl;
+
+  }
+  if (foo == "eta")
+  {
+    fin >>  eta ;
+      std::cerr << " +  {ctt - SETTING} " << "eta = " << eta  << std::endl;
+
+  }
+  if (foo == "R")
+  {
+    fin >>  R ;
+      std::cerr << " +  {ctt - SETTING} " << "R = " << R  << std::endl;
+
+  }
+  if (foo == "filename")
+  {
+    fin >>  filename ;
+      std::cerr << " +  {ctt - SETTING} " << "filename = " << filename  << std::endl;
 
   }
   if (foo == "randomseed")
@@ -187,6 +240,12 @@ void CTGlobal::help_available()
 {
 
  
+   std::cerr << " store_dynamics := tipo bool "  << std::endl ;
+   std::cerr << "--> sets whether to store the dynamics" << std::endl;
+   std::cerr << "    Valor por defecto : false" << std::endl;    std::cerr << "store_dynamics_filename := tipo  string "  << std::endl ;
+   std::cerr << "--> file name to store the dynamics" << std::endl;
+   std::cerr << "    Valor por defecto : \"dynamics.out\""  << std::endl ;
+
    std::cerr << "deltat := tipo  double "  << std::endl ;
    std::cerr << "--> time step for the simulation" << std::endl;
    std::cerr << "    Valor por defecto : 0.01"  << std::endl ;
@@ -195,10 +254,6 @@ void CTGlobal::help_available()
    std::cerr << "--> number of time steps in the simulation" << std::endl;
    std::cerr << "    Valor por defecto : 300"  << std::endl ;
 
-   std::cerr << "filename := tipo  string "  << std::endl ;
-   std::cerr << "--> initial opinions" << std::endl;
-   std::cerr << "    Valor por defecto : \"rank.in\""  << std::endl ;
-
    std::cerr << "N := tipo  int "  << std::endl ;
    std::cerr << "--> number of agents" << std::endl;
    std::cerr << "    Valor por defecto : 100"  << std::endl ;
@@ -206,6 +261,22 @@ void CTGlobal::help_available()
    std::cerr << "lnTruth := tipo  double "  << std::endl ;
    std::cerr << "--> the logarithm of the Truth" << std::endl;
    std::cerr << "    Valor por defecto : -2.0"  << std::endl ;
+
+   std::cerr << "W := tipo  double "  << std::endl ;
+   std::cerr << "--> maximum diffusion for the noise term of the agent ranked last" << std::endl;
+   std::cerr << "    Valor por defecto : 5.0"  << std::endl ;
+
+   std::cerr << "eta := tipo  double "  << std::endl ;
+   std::cerr << "--> sensitivity of agents to their ranks" << std::endl;
+   std::cerr << "    Valor por defecto : 5.0"  << std::endl ;
+
+   std::cerr << "R := tipo  int "  << std::endl ;
+   std::cerr << "--> number of realizations per W,eta pair" << std::endl;
+   std::cerr << "    Valor por defecto : 100"  << std::endl ;
+
+   std::cerr << "filename := tipo  string "  << std::endl ;
+   std::cerr << "--> initial opinions" << std::endl;
+   std::cerr << "    Valor por defecto : \"rank.in\""  << std::endl ;
 
    std::cerr << "randomseed := tipo  long "  << std::endl ;
    std::cerr << "--> semilla de los numeros aleatorios" << std::endl;

@@ -13,6 +13,7 @@
 #include <dranxor.h>
 
 //:::~ includes found in backends
+#include <sstream>
 
 #define VERSION_NUMBER ""
 #define RELEASE_DATE ""
@@ -27,27 +28,38 @@
 namespace CTGlobal
 {
 
-  extern std::string filein /* = "input.wisdom" */ ;
+  extern std::string filein /* = "input.rank" */ ;
 
   extern std::string prog_name /*  */ ;
 
   extern int verbosityLevel /* = 0*/;
   extern bool quietRun /* = false*/;
 
+//:::~  sets whether to store the dynamics
+extern bool  store_dynamics /* =  false */ ;
+//:::~  file name to store the dynamics
+extern std::string store_dynamics_filename /* =  "dynamics.out" */ ;
 //:::~  time step for the simulation
 extern  double deltat /* =  0.01 */ ;
 //:::~  number of time steps in the simulation
 extern  long t /* =  300 */ ;
-//:::~  initial opinions
-extern std::string filename /* =  "rank.in" */ ;
 //:::~  number of agents
 extern  int N /* =  100 */ ;
 //:::~  the logarithm of the Truth
 extern  double lnTruth /* =  -2.0 */ ;
+//:::~  maximum diffusion for the noise term of the agent ranked last
+extern  double W /* =  5.0 */ ;
+//:::~  sensitivity of agents to their ranks
+extern  double eta /* =  5.0 */ ;
+//:::~  number of realizations per W,eta pair
+extern  int R /* =  100 */ ;
+//:::~  initial opinions
+extern std::string filename /* =  "rank.in" */ ;
 //:::~  semilla de los numeros aleatorios
 extern  long randomseed /* =  0 */ ;
 
 // from backends
+extern  std::fstream *f_dynamics_out  ;
 
 //:::~ +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //:::~ Parse de las variables
