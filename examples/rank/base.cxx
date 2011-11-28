@@ -29,7 +29,7 @@ long t = 300 ;
 //:::~  number of agents
 int N = 100 ;
 //:::~  the logarithm of the Truth
-double lnTruth = -2.0 ;
+double lnTruth = 6.62 ;
 //:::~  maximum diffusion for the noise term of the agent ranked last
 double W = 5.0 ;
 //:::~  sensitivity of agents to their ranks
@@ -37,7 +37,7 @@ double eta = 5.0 ;
 //:::~  number of realizations per W,eta pair
 int R = 100 ;
 //:::~  initial opinions
-std::string filename = "rank.in" ;
+std::string filename = "/home/pmavrodiev/run/rank.in" ;
 //:::~  semilla de los numeros aleatorios
 long randomseed = 0 ;
 
@@ -260,7 +260,7 @@ void CTGlobal::help_available()
 
    std::cerr << "lnTruth := tipo  double "  << std::endl ;
    std::cerr << "--> the logarithm of the Truth" << std::endl;
-   std::cerr << "    Valor por defecto : -2.0"  << std::endl ;
+   std::cerr << "    Valor por defecto : 6.62"  << std::endl ;
 
    std::cerr << "W := tipo  double "  << std::endl ;
    std::cerr << "--> maximum diffusion for the noise term of the agent ranked last" << std::endl;
@@ -276,7 +276,7 @@ void CTGlobal::help_available()
 
    std::cerr << "filename := tipo  string "  << std::endl ;
    std::cerr << "--> initial opinions" << std::endl;
-   std::cerr << "    Valor por defecto : \"rank.in\""  << std::endl ;
+   std::cerr << "    Valor por defecto : \"/home/pmavrodiev/run/rank.in\""  << std::endl ;
 
    std::cerr << "randomseed := tipo  long "  << std::endl ;
    std::cerr << "--> semilla de los numeros aleatorios" << std::endl;
