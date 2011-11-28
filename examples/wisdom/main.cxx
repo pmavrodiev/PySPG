@@ -302,4 +302,35 @@ int main(int argc, char *argv[])
   
 }
 
+================================================================================================
+  
+  /* loop over the whole time period*/
+  for (long i=0; i<t; i++) {
+    /*simulate the dynamics of all agents*/
+    for (unsigned j=0; j<N; j++) {
+      delta_i_t = 
+    }
+  }
+  
+  /*calculate the final collective error and group diversity*/
+  /*log of the estimates. how much I miss R's vectorization */
+  double *dummy = (double *) malloc(N*sizeof(double));
+  for (unsigned j=0; j<N; j++) 
+    dummy[j] = log(estimates[j]);
 
+  double mean=gsl_stats_mean(dummy,1,N);
+  collective_error = pow(lnTruth-mean,2);
+  group_diversity =  gsl_stats_variance_m(dummy,1,N,mean);
+  free(dummy);
+
+  /*calculate the final WOC indicator*/
+  sort(&estimates[0], &estimates[N]);
+  int start = ceil(N/2);
+  while (start > 1) {
+    if ((estimates[start-1] <= exp(lnTruth)) && (estimates[N-start] >= exp(lnTruth))) {
+      woc = (double) start;
+      break;
+    }	 	
+    start--;
+  }
+  /***************/
