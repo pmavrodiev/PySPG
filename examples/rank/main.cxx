@@ -179,17 +179,19 @@ int main(int argc, char *argv[]) {
 	*f_dynamics_out<<"main():bad_alloc caught: "<<ba.what()<<endl;		
 	return EXIT_FAILURE;
       }
-      D = W / (1.0 + (W-1.0)*exp(-1.0*eta*gsl_vector_get(ranks,j)));
+      D = (Dmax*Dmin*exp(eta*gsl_vector_get(ranks,j))) / (Dmax+Dmin*(exp(eta*gsl_vector_get(ranks,j))-1));
+	//D = W / (1.0 + (W-1.0)*exp(-1.0*eta*gsl_vector_get(ranks,j)));
       delta_i_t = D*sqrt(deltat)*randnum;
       gsl_vector_set(estimates,j,gsl_vector_get(estimates,j)+delta_i_t);
     }
     /*save the collective error and group diversity at the end of the current time step*/
+    /* LINEAR ESTIMATES CONSIDERED AT THIS POINT */
     for (unsigned j=0; j<N; j++) 
-      dummy[j] = log(gsl_vector_get(estimates,j));   
+      //dummy[j] = log(gsl_vector_get(estimates,j));   
+      dummy[j] = gsl_vector_get(estimates,j);   
     
     mean=gsl_stats_mean(dummy,1,N);
-  
-    collective_error = pow(lnTruth-mean,2);
+    collective_error = pow(lnTruth-mean,2); //if linear estimates then lnTruth should be the "linear" truth
     group_diversity = gsl_stats_variance_m(dummy,1,N,mean);
     *f_dynamics_out<<i<<"\t"<<collective_error<<"\t"<<group_diversity<<endl;
     /*********************************************/

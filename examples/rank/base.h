@@ -42,13 +42,15 @@ extern std::string store_dynamics_filename /* =  "dynamics.out" */ ;
 //:::~  time step for the simulation
 extern  double deltat /* =  0.01 */ ;
 //:::~  number of time steps in the simulation
-extern  long t /* =  300 */ ;
+extern  long t /* =  3000 */ ;
 //:::~  number of agents
 extern  int N /* =  100 */ ;
-//:::~  the logarithm of the Truth
-extern  double lnTruth /* =  6.62 */ ;
-//:::~  maximum diffusion for the noise term of the agent ranked last
-extern  double W /* =  5.0 */ ;
+//:::~  the linear (or logarithm of) the Truth
+extern  double lnTruth /* =  1.7 */ ;
+//:::~  the maximum diffusion for the noise term
+extern  double Dmax /* =  3.0 */ ;
+//:::~  the minimum diffusion for the noise term
+extern  double Dmin /* =  0.01 */ ;
 //:::~  sensitivity of agents to their ranks
 extern  double eta /* =  5.0 */ ;
 //:::~  number of realizations per W,eta pair

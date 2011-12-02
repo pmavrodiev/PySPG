@@ -5,11 +5,11 @@ library("RColorBrewer")
   setwd("~/Documents/scripts/rank")
   
   N=100 #number of agents
-  T=300 #number of time steps
+  T=3000 #number of time steps
   M=100 #number of realizations
   W=0
   eta=0
-  W_eta_pairs_num=120
+  W_eta_pairs_num=1000
   m=0 #current realization
   if (!exists("rank_matrix")) #init only once
     rank_matrix=array(0,dim=c(T,3,W_eta_pairs_num)) #W_eta_pairs {W,eta} pairs
@@ -108,7 +108,7 @@ plot(rank_matrix[,1,k],rank_matrix[,3,k],type="l",lwd=2,cex.lab=2,cex.axis=2,xla
   t_idx = seq(1,T,by=1)
   eta_idx = seq(0.5,5.0,by=0.5)
   W_eta_pair_matrix = matrix(0,length(t_idx),length(eta_idx))
-  W_idx_vector = seq(1.1,2.236,by=0.1)
+  W_idx_vector = seq(1,100,by=1)
   setwd("~/Documents/scripts/rank/figs")
   pdf(file=paste("W-const-image-plot.pdf",sep=""),title="W is const")
 for (W_idx in seq(1,W_eta_pairs_num,by=10)) {  
@@ -122,8 +122,5 @@ image.plot(t_idx,eta_idx,W_eta_pair_matrix,main=plot.title,xlab="Time",ylab="eta
   }
   dev.off()
     
-    
-    
-
-  #========================================================#
+    #========================================================#
  

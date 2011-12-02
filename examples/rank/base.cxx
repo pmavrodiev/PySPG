@@ -25,13 +25,15 @@ std::string store_dynamics_filename = "dynamics.out" ;
 //:::~  time step for the simulation
 double deltat = 0.01 ;
 //:::~  number of time steps in the simulation
-long t = 300 ;
+long t = 3000 ;
 //:::~  number of agents
 int N = 100 ;
-//:::~  the logarithm of the Truth
-double lnTruth = 6.62 ;
-//:::~  maximum diffusion for the noise term of the agent ranked last
-double W = 5.0 ;
+//:::~  the linear (or logarithm of) the Truth
+double lnTruth = 1.7 ;
+//:::~  the maximum diffusion for the noise term
+double Dmax = 3.0 ;
+//:::~  the minimum diffusion for the noise term
+double Dmin = 0.01 ;
 //:::~  sensitivity of agents to their ranks
 double eta = 5.0 ;
 //:::~  number of realizations per W,eta pair
@@ -141,7 +143,7 @@ void CTGlobal::input_variables(std::istream &fin)
  while( (!fin.eof()) &&  (foo != "end") )
  {
     
-  if (  (foo !="store_dynamics_filename") && (foo !="deltat") && (foo !="t") && (foo !="N") && (foo !="lnTruth") && (foo !="W") && (foo !="eta") && (foo !="R") && (foo !="filename") && (foo !="randomseed") && (foo !="store_dynamics")  )
+  if (  (foo !="store_dynamics_filename") && (foo !="deltat") && (foo !="t") && (foo !="N") && (foo !="lnTruth") && (foo !="Dmax") && (foo !="Dmin") && (foo !="eta") && (foo !="R") && (foo !="filename") && (foo !="randomseed") && (foo !="store_dynamics")  )
   {  
     std::cerr << " +  {ctt - ERROR} command " <<  foo << " not understood";
     std::cerr << std::endl;
@@ -184,10 +186,16 @@ void CTGlobal::input_variables(std::istream &fin)
       std::cerr << " +  {ctt - SETTING} " << "lnTruth = " << lnTruth  << std::endl;
 
   }
-  if (foo == "W")
+  if (foo == "Dmax")
   {
-    fin >>  W ;
-      std::cerr << " +  {ctt - SETTING} " << "W = " << W  << std::endl;
+    fin >>  Dmax ;
+      std::cerr << " +  {ctt - SETTING} " << "Dmax = " << Dmax  << std::endl;
+
+  }
+  if (foo == "Dmin")
+  {
+    fin >>  Dmin ;
+      std::cerr << " +  {ctt - SETTING} " << "Dmin = " << Dmin  << std::endl;
 
   }
   if (foo == "eta")
@@ -252,19 +260,23 @@ void CTGlobal::help_available()
 
    std::cerr << "t := tipo  long "  << std::endl ;
    std::cerr << "--> number of time steps in the simulation" << std::endl;
-   std::cerr << "    Valor por defecto : 300"  << std::endl ;
+   std::cerr << "    Valor por defecto : 3000"  << std::endl ;
 
    std::cerr << "N := tipo  int "  << std::endl ;
    std::cerr << "--> number of agents" << std::endl;
    std::cerr << "    Valor por defecto : 100"  << std::endl ;
 
    std::cerr << "lnTruth := tipo  double "  << std::endl ;
-   std::cerr << "--> the logarithm of the Truth" << std::endl;
-   std::cerr << "    Valor por defecto : 6.62"  << std::endl ;
+   std::cerr << "--> the linear (or logarithm of) the Truth" << std::endl;
+   std::cerr << "    Valor por defecto : 1.7"  << std::endl ;
 
-   std::cerr << "W := tipo  double "  << std::endl ;
-   std::cerr << "--> maximum diffusion for the noise term of the agent ranked last" << std::endl;
-   std::cerr << "    Valor por defecto : 5.0"  << std::endl ;
+   std::cerr << "Dmax := tipo  double "  << std::endl ;
+   std::cerr << "--> the maximum diffusion for the noise term" << std::endl;
+   std::cerr << "    Valor por defecto : 3.0"  << std::endl ;
+
+   std::cerr << "Dmin := tipo  double "  << std::endl ;
+   std::cerr << "--> the minimum diffusion for the noise term" << std::endl;
+   std::cerr << "    Valor por defecto : 0.01"  << std::endl ;
 
    std::cerr << "eta := tipo  double "  << std::endl ;
    std::cerr << "--> sensitivity of agents to their ranks" << std::endl;
