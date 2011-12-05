@@ -1,9 +1,0 @@
-choice:string:regime:"AGGR","FULL","NO":information regime
-val:double:alpha:1.0:strength of social influence
-val:double:beta:1.0:strength of individual conviction
-val:double:deltat:0.01:time step for the simulation
-val:long:t:300:number of time steps in the simulation
-val:string:filename:"wisdom.in":initial estimates (fig 4 top-left) are stored here
-val:int:N:100:number of agents
-val:double:Dn:0.5:noise diffusion coefficient
-val:double:lnTruth:-2.0:the logarithm of the Truth
