@@ -42,7 +42,7 @@ extern std::string store_dynamics_filename /* =  "dynamics.out" */ ;
 //:::~  time step for the simulation
 extern  double deltat /* =  0.01 */ ;
 //:::~  number of time steps in the simulation
-extern  long t /* =  3000 */ ;
+extern  long t /* =  500 */ ;
 //:::~  number of agents
 extern  int N /* =  100 */ ;
 //:::~  the linear (or logarithm of) the Truth
@@ -54,7 +54,7 @@ extern  double Dmin /* =  0.01 */ ;
 //:::~  sensitivity of agents to their ranks
 extern  double eta /* =  5.0 */ ;
 //:::~  number of realizations per W,eta pair
-extern  int R /* =  100 */ ;
+extern  int O /* =  100 */ ;
 //:::~  initial opinions
 extern std::string filename /* =  "/home/pmavrodiev/run/rank.in" */ ;
 //:::~  semilla de los numeros aleatorios
