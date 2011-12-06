@@ -2,20 +2,34 @@ library("fields")
 library("RColorBrewer")
 library("animation")
 library("graphics")
-  setwd("~/Documents/scripts/rank")
+#library("modeest")
+  # === the rank function ===#
+  rank_fun = function(Dmin,Dmax,eta,rank) {
+    rank_fun = (Dmax*Dmin*exp(eta*rank)) /  (Dmax+Dmin*(exp(eta*rank)-1))
+  }
+  r=seq(0,1,by=0.01)
+  plot(r,rank_fun(0.01,10,25,r),type="l",xlab="Rank",ylab="Diffusion")
+  # ======================== #
+
+setwd("~/Documents/scripts/rank")
 
   N=100 #number of agents
   T=500 #number of time steps
   M=3 #number of realizations
   D=0
   eta=0
-  Truth = 1.7
+ #Truth = 1.7
+  Truth = 6
   #Warning: magic numbers here, sequences below must match parameters_rank.dat
   #####################################
   estimates_matrix=matrix(0,N,(T+1))
-  collective_error=NULL
-  
-  data_unzipped=read.delim("O-1_Dmax-10.0_eta-10.0.rankout.gz",header=FALSE)
+
+  data_unzipped=read.delim("P-1_Dmax-7.5_eta-25.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-2_Dmax-10.0_eta-25.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-1_Dmax-10.0_eta-25.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-2_Dmax-10.0_eta-10.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-2_Dmax-2.5_eta-5.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-1_Dmax-10.0_eta-10.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-1_Dmax-2.5_eta-5.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-1_Dmax-20.0_eta-19.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-1_Dmax-2.5_eta-19.0.rankout.gz",header=FALSE)
@@ -27,17 +41,31 @@ library("graphics")
     estimates_matrix[,(data_unzipped[i,2]+1)] = data_unzipped[(i+1):((i+N)),1]
   }
   ani.options("nmax"=(T+1))
-  ani.fun=function() {
+  #plot the histogram and collective error over time
+  collective_error=NULL
+  Median = NULL
+  Mode = NULL
+  hist_collective_error.fun=function() {
     for (i in 1:ani.options("nmax")) {
-      par(mfrow=c(2,1))  
+      par(mfrow=c(2,2))  
       hist(estimates_matrix[,i],breaks=70,freq=TRUE,main=paste("Time = ",i,sep=""),xlab="Estimates",ylab="Frequency")
       abline(v=Truth)
       collective_error = c(collective_error,(mean(estimates_matrix[,i])-Truth)^2)      
       plot(1:length(collective_error),collective_error,type="l",col="blue")
+      Median = c(Median,(median(estimates_matrix[,i])-Truth)^2)
+      plot(1:length(Median),Median,type="l",col="green",ylab="Median",xlab="Time")
       ani.pause(0.001)
     }
   }
 
-  saveMovie(ani.fun(),movie.name="test.gif",img.name="Rplot",convert="convert",clean=TRUE)
+  saveMovie(hist_collective_error.fun(),movie.name="test.gif",img.name="Rplot",convert="convert",clean=TRUE)
 
-    
+  #plot the absolute distance between the best agent *at the start* and the truth over time
+  x11()
+par(mar=c(5,4,4,6)) 
+plot(seq(1:(T+1)),abs(data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),5]-Truth),type="l",xlab="Time",ylab="Abs. Distance from Truth",main="Best agent at the start")
+#add the rank of the best agent *at the start* over time. naturally at time 0 rank is 0
+par(new=TRUE)
+plot(seq(1:(T+1)),data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),6],type="l",col="blue",xaxt="n",yaxt="n",xlab="",ylab="")
+axis(4)
+mtext("Rank",side=4,line=3)

@@ -58,7 +58,6 @@ void grace_exit() {
 
 /*Compute the ranks of the population in the current time period.
   Modified from http://www.gnu.org/s/gsl/manual/html_node/Computing-the-rank.html*/
-/*TODO-FINISH THIS*/
 void compute_ranks () {
   size_t i;
   size_t n = estimates->size;
@@ -166,7 +165,7 @@ int main(int argc, char *argv[]) {
     grace_exit();
   } 
   
-  /*estimates of agent with rank 1*/
+  /*estimates of agent with rank 1 in the beginning*/
   int rank_one=gsl_vector_min_index(ranks);
 
   /*compute initial collective error and group diversity*/

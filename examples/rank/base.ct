@@ -2,9 +2,9 @@
 val:double:deltat:0.01:time step for the simulation
 val:long:t:500:number of time steps in the simulation
 val:int:N:100:number of agents
-val:double:lnTruth:1.7:the linear (or logarithm of) the Truth
+val:double:lnTruth:6:the linear (or logarithm of) the Truth
 val:double:Dmax:3.0:the maximum diffusion for the noise term
 val:double:Dmin:0.01:the minimum diffusion for the noise term
 val:double:eta:5.0:sensitivity of agents to their ranks
-val:int:O:100:number of realizations per W,eta pair
+val:int:P:100:number of realizations per W,eta pair
 val:string:filename:"/home/pmavrodiev/run/rank.in":initial opinions

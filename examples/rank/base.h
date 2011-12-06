@@ -46,7 +46,7 @@ extern  long t /* =  500 */ ;
 //:::~  number of agents
 extern  int N /* =  100 */ ;
 //:::~  the linear (or logarithm of) the Truth
-extern  double lnTruth /* =  1.7 */ ;
+extern  double lnTruth /* =  6 */ ;
 //:::~  the maximum diffusion for the noise term
 extern  double Dmax /* =  3.0 */ ;
 //:::~  the minimum diffusion for the noise term
@@ -54,7 +54,7 @@ extern  double Dmin /* =  0.01 */ ;
 //:::~  sensitivity of agents to their ranks
 extern  double eta /* =  5.0 */ ;
 //:::~  number of realizations per W,eta pair
-extern  int O /* =  100 */ ;
+extern  int P /* =  100 */ ;
 //:::~  initial opinions
 extern std::string filename /* =  "/home/pmavrodiev/run/rank.in" */ ;
 //:::~  semilla de los numeros aleatorios
