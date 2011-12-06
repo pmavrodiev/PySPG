@@ -14,8 +14,12 @@ library("graphics")
   #####################################
   estimates_matrix=matrix(0,N,(T+1))
   collective_error=NULL
-
-  data_unzipped=read.delim("O-1_Dmax-2.5_eta-19.0.rankout.gz",header=FALSE)
+  
+  data_unzipped=read.delim("O-1_Dmax-10.0_eta-10.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-1_Dmax-2.5_eta-5.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-1_Dmax-20.0_eta-19.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-1_Dmax-2.5_eta-19.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("O-1_Dmax-14.0_eta-19.0.rankout.gz",header=FALSE)
   
   for (i in seq(1,((T+1)*(N+1)),by=(N+1))) {
     #every (i-1)*(N+1) line is the current time step + additional info on that line
