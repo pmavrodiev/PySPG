@@ -37,7 +37,7 @@ double Dmin = 0.01 ;
 //:::~  sensitivity of agents to their ranks
 double eta = 5.0 ;
 //:::~  number of realizations per W,eta pair
-int P = 100 ;
+int Q = 100 ;
 //:::~  initial opinions
 std::string filename = "/home/pmavrodiev/run/rank.in" ;
 //:::~  semilla de los numeros aleatorios
@@ -143,7 +143,7 @@ void CTGlobal::input_variables(std::istream &fin)
  while( (!fin.eof()) &&  (foo != "end") )
  {
     
-  if (  (foo !="store_dynamics_filename") && (foo !="deltat") && (foo !="t") && (foo !="N") && (foo !="lnTruth") && (foo !="Dmax") && (foo !="Dmin") && (foo !="eta") && (foo !="P") && (foo !="filename") && (foo !="randomseed") && (foo !="store_dynamics")  )
+  if (  (foo !="store_dynamics_filename") && (foo !="deltat") && (foo !="t") && (foo !="N") && (foo !="lnTruth") && (foo !="Dmax") && (foo !="Dmin") && (foo !="eta") && (foo !="Q") && (foo !="filename") && (foo !="randomseed") && (foo !="store_dynamics")  )
   {  
     std::cerr << " +  {ctt - ERROR} command " <<  foo << " not understood";
     std::cerr << std::endl;
@@ -204,10 +204,10 @@ void CTGlobal::input_variables(std::istream &fin)
       std::cerr << " +  {ctt - SETTING} " << "eta = " << eta  << std::endl;
 
   }
-  if (foo == "P")
+  if (foo == "Q")
   {
-    fin >>  P ;
-      std::cerr << " +  {ctt - SETTING} " << "P = " << P  << std::endl;
+    fin >>  Q ;
+      std::cerr << " +  {ctt - SETTING} " << "Q = " << Q  << std::endl;
 
   }
   if (foo == "filename")
@@ -282,7 +282,7 @@ void CTGlobal::help_available()
    std::cerr << "--> sensitivity of agents to their ranks" << std::endl;
    std::cerr << "    Valor por defecto : 5.0"  << std::endl ;
 
-   std::cerr << "P := tipo  int "  << std::endl ;
+   std::cerr << "Q := tipo  int "  << std::endl ;
    std::cerr << "--> number of realizations per W,eta pair" << std::endl;
    std::cerr << "    Valor por defecto : 100"  << std::endl ;
 

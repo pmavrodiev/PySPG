@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
   group_diversity = gsl_stats_variance_m(dummy,1,N,mean);
   pid_t pid = getpid(); //output the process id to distinguish multiple workers executing the same parameter combination
   /*process id \t starting time \t collective error \t group diversity \t estimates of agent with lowest rank \t the rank itself*/
-  *f_dynamics_out<<pid<<"\t"<<0<<"\t"<<collective_error<<"\t"<<group_diversity<<"\t"<<gsl_vector_get(estimates,rank_one)<<"\t"<<gsl_vector_get(ranks,rank_one)<<endl;
+  *f_dynamics_out<<pid<<"\t"<<0<<"\t"<<collective_error<<"\t"<<group_diversity<<"\t"<<gsl_vector_get(estimates,rank_one)<<"\t"<<gsl_vector_get(ranks,rank_one)<<"\t"<<gsl_vector_get(estimates,gsl_vector_min_index(ranks))<<"\t"<<gsl_vector_get(ranks,gsl_vector_min_index(ranks))<<endl;
   /*output all estimates*/
   for (int j=0; j<N; j++)
     *f_dynamics_out<<gsl_vector_get(estimates,j)<<endl;
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
     collective_error = pow(lnTruth-mean,2); //if linear estimates then lnTruth should be the "linear" truth
     group_diversity = gsl_stats_variance_m(dummy,1,N,mean);
     pid_t pid = getpid(); //output the process id to distinguish multiple workers executing the same parameter combination
-    *f_dynamics_out<<pid<<"\t"<<i+1<<"\t"<<collective_error<<"\t"<<group_diversity<<"\t"<<gsl_vector_get(estimates,rank_one)<<"\t"<<gsl_vector_get(ranks,rank_one)<<endl;
+    *f_dynamics_out<<pid<<"\t"<<i+1<<"\t"<<collective_error<<"\t"<<group_diversity<<"\t"<<gsl_vector_get(estimates,rank_one)<<"\t"<<gsl_vector_get(ranks,rank_one)<<"\t"<<gsl_vector_get(estimates,gsl_vector_min_index(ranks))<<"\t"<<gsl_vector_get(ranks,gsl_vector_min_index(ranks))<<endl;
     /*output all estimates*/
     for (int jj=0; jj<N; jj++)
       *f_dynamics_out<<gsl_vector_get(estimates,jj)<<endl;

@@ -1,30 +1,32 @@
-library("fields")
-library("RColorBrewer")
-library("animation")
-library("graphics")
-#library("modeest")
-  # === the rank function ===#
+  library("fields")
+  library("RColorBrewer")
+  library("animation")
+  library("graphics")
+  #library("modeest")
+
+  # =============================== the rank function ========================================= #
   rank_fun = function(Dmin,Dmax,eta,rank) {
     rank_fun = (Dmax*Dmin*exp(eta*rank)) /  (Dmax+Dmin*(exp(eta*rank)-1))
   }
   r=seq(0,1,by=0.01)
-  plot(r,rank_fun(0.01,10,25,r),type="l",xlab="Rank",ylab="Diffusion")
-  # ======================== #
+  plot(r,rank_fun(0.01,14,25,r),type="l",xlab="Rank",ylab="Diffusion")
+  # =========================================================================================== #
 
-setwd("~/Documents/scripts/rank")
+  # =============================== init ========================================= #
+  setwd("~/Documents/scripts/rank")
 
   N=100 #number of agents
   T=500 #number of time steps
-  M=3 #number of realizations
+  M=1 #number of realizations
   D=0
   eta=0
- #Truth = 1.7
+  #Truth = 1.7
   Truth = 6
-  #Warning: magic numbers here, sequences below must match parameters_rank.dat
-  #####################################
   estimates_matrix=matrix(0,N,(T+1))
-
-  data_unzipped=read.delim("P-1_Dmax-7.5_eta-25.0.rankout.gz",header=FALSE)
+  
+  data_unzipped=read.delim("Q-1_Dmax-1_eta-1.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("Q-1_Dmax-15.5_eta-25.0.rankout.gz",header=FALSE)
+  #data_unzipped=read.delim("P-1_Dmax-7.5_eta-25.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-2_Dmax-10.0_eta-25.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-1_Dmax-10.0_eta-25.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-2_Dmax-10.0_eta-10.0.rankout.gz",header=FALSE)
@@ -34,6 +36,7 @@ setwd("~/Documents/scripts/rank")
   #data_unzipped=read.delim("O-1_Dmax-20.0_eta-19.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-1_Dmax-2.5_eta-19.0.rankout.gz",header=FALSE)
   #data_unzipped=read.delim("O-1_Dmax-14.0_eta-19.0.rankout.gz",header=FALSE)
+  # =========================================================================================== #
   
   for (i in seq(1,((T+1)*(N+1)),by=(N+1))) {
     #every (i-1)*(N+1) line is the current time step + additional info on that line
@@ -41,6 +44,7 @@ setwd("~/Documents/scripts/rank")
     estimates_matrix[,(data_unzipped[i,2]+1)] = data_unzipped[(i+1):((i+N)),1]
   }
   ani.options("nmax"=(T+1))
+
   #plot the histogram and collective error over time
   collective_error=NULL
   Median = NULL
@@ -57,15 +61,33 @@ setwd("~/Documents/scripts/rank")
       ani.pause(0.001)
     }
   }
+ saveMovie(hist_collective_error.fun(),movie.name="test.gif",img.name="Rplot",convert="convert",clean=TRUE)
 
-  saveMovie(hist_collective_error.fun(),movie.name="test.gif",img.name="Rplot",convert="convert",clean=TRUE)
-
-  #plot the absolute distance between the best agent *at the start* and the truth over time
+  #plot the absolute distance between the best agent *at the start* and the truth, and its rank over time
   x11()
-par(mar=c(5,4,4,6)) 
-plot(seq(1:(T+1)),abs(data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),5]-Truth),type="l",xlab="Time",ylab="Abs. Distance from Truth",main="Best agent at the start")
-#add the rank of the best agent *at the start* over time. naturally at time 0 rank is 0
-par(new=TRUE)
+  par(mar=c(5,4,4,6)) 
+  plot(seq(1:(T+1)),abs(data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),5]-Truth),type="l",xlab="Time",ylab="Abs. Distance from Truth",main="Best agent at the start")
+  #add the rank of the best agent *at the start* over time. naturally at time 0 rank is 0
+  par(new=TRUE)  plot(seq(1:(T+1)),data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),6],type="l",col="blue",xaxt="n",yaxt="n",xlab="",ylab="")
+  axis(4)
+  mtext("Rank",side=4,line=3)
+  
+  # plot the absolute distance between the best agent *currently* and the truth over time.
+  # *semi-log scale*
+  for (i in 1:M) {
+    setwd(paste("~/Documents/scripts/rank/Q-",i,sep=""))
+    rank_dir = dir(pattern="*rankout*",recursive=TRUE)
+  }
+  
+  x11()  
+  par(mar=c(5,4,4,6)) 
+  plot(seq(1:(T+1)),log(abs(data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),7]-Truth)),type="l",xlab="Time",ylab="Abs. Distance from Truth",main="Best agent currently")
+
+
+  #add the *mode* and its rank over time. need to bin the data first, else all estimates are different
+  par(new=TRUE)
 plot(seq(1:(T+1)),data_unzipped[seq(1,((T+1)*(N+1)),by=(N+1)),6],type="l",col="blue",xaxt="n",yaxt="n",xlab="",ylab="")
-axis(4)
-mtext("Rank",side=4,line=3)
+  axis(4)
+  mtext("Rank",side=4,line=3)
+
+
