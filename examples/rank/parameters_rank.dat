@@ -1,7 +1,8 @@
 @execute ctx-rank.p4
 :store_dynamics
-:store_dynamics_filename {Q}_{Dmax}_{eta}.rankout
+:store_dynamics_filename {lnTruth}_{Q}_{Dmax}_{eta}.rankout
 :deltat 0.01
++lnTruth -0.125 10 1
 +Q 1 100 1
-+Dmax 1 20 0.5
++Dmax 1 30 0.5
 +eta 1 35 0.5

@@ -1,6 +1,6 @@
 @conditional_file_out dynamics
 val:double:deltat:0.01:time step for the simulation
-val:long:t:500:number of time steps in the simulation
+val:long:t:1000:number of time steps in the simulation
 val:int:N:100:number of agents
 val:double:lnTruth:6:the linear (or logarithm of) the Truth
 val:double:Dmax:3.0:the maximum diffusion for the noise term

@@ -25,7 +25,7 @@ std::string store_dynamics_filename = "dynamics.out" ;
 //:::~  time step for the simulation
 double deltat = 0.01 ;
 //:::~  number of time steps in the simulation
-long t = 500 ;
+long t = 1000 ;
 //:::~  number of agents
 int N = 100 ;
 //:::~  the linear (or logarithm of) the Truth
@@ -260,7 +260,7 @@ void CTGlobal::help_available()
 
    std::cerr << "t := tipo  long "  << std::endl ;
    std::cerr << "--> number of time steps in the simulation" << std::endl;
-   std::cerr << "    Valor por defecto : 500"  << std::endl ;
+   std::cerr << "    Valor por defecto : 1000"  << std::endl ;
 
    std::cerr << "N := tipo  int "  << std::endl ;
    std::cerr << "--> number of agents" << std::endl;

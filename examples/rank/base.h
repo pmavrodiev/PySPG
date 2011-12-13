@@ -42,7 +42,7 @@ extern std::string store_dynamics_filename /* =  "dynamics.out" */ ;
 //:::~  time step for the simulation
 extern  double deltat /* =  0.01 */ ;
 //:::~  number of time steps in the simulation
-extern  long t /* =  500 */ ;
+extern  long t /* =  1000 */ ;
 //:::~  number of agents
 extern  int N /* =  100 */ ;
 //:::~  the linear (or logarithm of) the Truth
