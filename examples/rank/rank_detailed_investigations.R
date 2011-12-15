@@ -10,7 +10,17 @@
     rank_fun = (Dmax*Dmin*exp(eta*rank)) /  (Dmax+Dmin*(exp(eta*rank)-1))
   }
   r=seq(0,1,by=0.01)
-  plot(r,rank_fun(0.01,2,5,r),type="l",xlab="Rank",ylab="Diffusion")
+  x.lab=bquote(paste(r[i],"(t)",sep=""))
+  y.lab=bquote(paste("D(",r[i],"(t))",sep=""))
+  par(mar=c(4,6,1,3))
+  plot(r,rank_fun(0.01,2,10,r),type="l",xlab=x.lab,ylab=y.lab,lwd=3,cex.lab=2,cex.axis=2)
+  lines(r,rank_fun(0.01,2,30,r),type="l",lwd=3,lty=2)
+  lines(r,rank_fun(0.01,2,50,r),type="l",lwd=3,lty=3)
+  lines(r,rank_fun(0.01,2,5,r),type="l",lwd=3,lty="431313")
+  text(0.12,1.9,bquote(paste(eta,"=",50,sep="")),cex=1.5)
+  text(0.26,1.5,bquote(paste(eta,"=",30,sep="")),cex=1.5)
+  text(0.58,1,bquote(paste(eta,"=",10,sep="")),cex=1.5)
+  text(0.95,0.58,bquote(paste(eta,"=",5,sep="")),cex=1.5)
   # =========================================================================================== #
 
   # =============================== init ========================================= #

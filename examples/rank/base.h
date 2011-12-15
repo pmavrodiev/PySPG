@@ -54,7 +54,7 @@ extern  double Dmin /* =  0.01 */ ;
 //:::~  sensitivity of agents to their ranks
 extern  double eta /* =  5.0 */ ;
 //:::~  number of realizations per W,eta pair
-extern  int Q /* =  100 */ ;
+extern  int B /* =  100 */ ;
 //:::~  initial opinions
 extern std::string filename /* =  "/home/pmavrodiev/run/rank.in" */ ;
 //:::~  semilla de los numeros aleatorios

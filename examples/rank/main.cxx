@@ -224,9 +224,9 @@ int main(int argc, char *argv[]) {
   gsl_vector_free(ranks);  
   gsl_rng_free(r);
   free(dummy);
-  std::cout << collective_error << "\t";
-  std::cout << group_diversity << "\t";
-  std::cout << woc << std::endl;
+  //  std::cout << collective_error << "\t";
+  //  std::cout << group_diversity << "\t";
+  //  std::cout << woc << std::endl;
   return EXIT_SUCCESS;
   
 }

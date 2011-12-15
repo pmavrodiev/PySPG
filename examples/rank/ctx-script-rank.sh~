@@ -1,0 +1,12 @@
+#!/bin/bash
+# $1 -i
+# $2 input_file
+
+mkdir -f /local/scratch/pmavrodiev
+ctx-rank.p4 -i $2
+
+read $2 to extract output filename
+process output filename as done now
+output to cout the metrics of interest (e.g. FPT and time to SS, etc.)
+remove the output filename
+

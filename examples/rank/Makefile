@@ -1,7 +1,7 @@
 # put common definitions in here
 
 TARGET          = rank
-
+TARGET_SCRIPT   = script-rank
 CONFIGFILE      = 
 
 BASEDIR         = $(HOME)/opt
@@ -17,6 +17,7 @@ RM              = rm
 SHELL           = /bin/bash
 INCLUDES        = -I${BASEDIR}/include
 EXEEXT          = .p4
+EXEEXT_SCRIPT   = .sh
 EXEPREFIX       = ctx-
 OBJS            = base.o main.o 
 
@@ -26,11 +27,12 @@ OBJS            = base.o main.o
 all:  ${EXEPREFIX}${TARGET}${EXEEXT}
 
 install:
+	install ${EXEPREFIX}${TARGET_SCRIPT}${EXEEXT_SCRIPT} ${BASEDIR}/bin
 	install ${EXEPREFIX}${TARGET}${EXEEXT} ${BASEDIR}/bin
-	install -T -m 0644 conf.in ${BASEDIR}/etc/spg-conf/${TARGET}.in
-	install -T -m 0644 conf.stdout ${BASEDIR}/etc/spg-conf/${TARGET}.stdout
-	install -T -m 0644 conf.params ${BASEDIR}/etc/spg-conf/${TARGET}.params
-	install -T -m 0644 base.ct ${BASEDIR}/etc/spg-conf/${TARGET}.ct
+	install -T -m 0644 conf.in ${BASEDIR}/etc/spg-conf/${TARGET_SCRIPT}.in
+	install -T -m 0644 conf.stdout ${BASEDIR}/etc/spg-conf/${TARGET_SCRIPT}.stdout
+	install -T -m 0644 conf.params ${BASEDIR}/etc/spg-conf/${TARGET_SCRIPT}.params
+	install -T -m 0644 base.ct ${BASEDIR}/etc/spg-conf/${TARGET_SCRIPT}.ct
 
 
 ${EXEPREFIX}${TARGET}${EXEEXT}: ${OBJS}

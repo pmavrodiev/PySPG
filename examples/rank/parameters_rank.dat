@@ -1,8 +1,10 @@
-@execute ctx-rank.p4
+@execute ctx-script-rank.sh
 :store_dynamics
-:store_dynamics_filename {lnTruth}_{Q}_{Dmax}_{eta}.rankout
+:store_dynamics_filename /local/scratch/pmavrodiev/{lnTruth}_{B}_{Dmax}_{eta}.rankout
 :deltat 0.01
-+lnTruth -0.125 10 1
-+Q 1 100 1
-+Dmax 1 30 0.5
-+eta 1 35 0.5
+:t 500
+:N 100
++lnTruth 6 10 2
++B 1 10 1
++Dmax 5 20 0.5
++eta 5 25 0.5

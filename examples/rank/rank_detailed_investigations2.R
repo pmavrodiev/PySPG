@@ -2,6 +2,7 @@
   library("RColorBrewer")
   library("animation")
   library("graphics")
+  library("psych")
   
   # ========================== INITIALIZATION ===========================#
   root_dir_name="~/Documents/scripts/rank/"
@@ -138,6 +139,7 @@
     #average
     Dmax_eta_matrix = Dmax_eta_matrix / Dmax_eta_matrix_number
     plot.title=paste("Mode First Passage Time(15%), Truth=",Truth,sep="")
-    
-    image.plot(eta_sequence,Dmax_sequence,Dmax_eta_matrix,main=plot.title,xlab="Sensitivity (eta)",ylab="Maximum diffusion (Dmax)")
+    x.lab=bquote(paste(eta,sep=""))
+    y.lab=bquote(paste(D[max],sep=""))
+    image.plot(eta_sequence,Dmax_sequence,Dmax_eta_matrix,xlab=x.lab,ylab=y.lab,cex.lab=2,cex.axis=2)
   }

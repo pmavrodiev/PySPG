@@ -1,3 +1,6 @@
-collective_error:help = collective error:texlabel = $\mathcal{E}$
-group_diversity:help = group diversity:texlabel = $\mathcal{D}$
-woc:help = wisdom of crowds indicator:texlabel = $\mathcal{W}$
+mean_fpt:help = first passage time of the mean:texlabel = $\mathcal{T}_{\text{mean}}^{\text{fpt}}$
+mode_fpt:help = first passage time of the mode:texlabel = $\mathcal{T}_{\text{mode}}^{\text{fpt}}$
+median_fpt:help = first passage time of the median:texlabel = $\mathcal{T}_{\text{median}}^{\text{fpt}}$
+mean_ss:help = time to stationary state of the mean:texlabel = $\mathcal{T}_{\text{mean}}^{\text{ss}}$
+mode_ss:help = time to stationary state of the mode:texlabel = $\mathcal{T}_{\text{mode}}^{\text{ss}}$
+median_ss:help = time to stationary state of the median:texlabel = $\mathcal{T}_{\text{median}}^{\text{ss}}$
