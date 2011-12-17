@@ -1,7 +1,10 @@
 library("DBI")
 library("RSQLite")
+library("fields")
+library("RColorBrewer")
+library("graphics")
 
-setwd("/mnt/ethz/home/run")
+setwd("~/Programs/PySPG/examples/rank")
 
 #Connect to the database
 spg_db = "results_rank.sqlite.copy"
@@ -14,40 +17,42 @@ Truth = seq(1,10,by=2); lTruth = length(Truth)
 Realizations = seq(1,100,1); lRealizations = length(Realizations)
 Dmax = seq(1,20,by=0.5); lDmax = length(Dmax)
 Eta = seq(1,25,by=0.5); lEta = length(Eta)
-Results = seq(1,6,by=1); lResults = length(Results)
-#Results=c(mean_fpt,mode_fpt,median_fpt,mean_ss,mode_ss,median_ss)
+#auxillary
+result_matrix = matrix(NA,length(Eta),length(Dmax))
 
-#mean_fpt=1;mode_fpt=1;median_fpt=1;mean_ss=1;mode_ss=1;median_ss=1
-#lmean_fpt=length(mean_fpt);lmode_fpt=length(mode_fpt);lmedian_fpt=length(median_fpt);lmean_ss=length(mean_ss);lmode_ss=length(mode_ss);lmedian_ss=length(median_ss)
-#Read the spg sqlite db into this multidimensional monster
-dim_monster = array(0,dim=c(lTruth,lRealizations,lDmax,lEta,lResults),dimnames=list("Truth"=Truth,"Realizations"=Realizations,"Dmax"=Dmax,"Eta"=Eta,"Results"=Results))
-
-
-spg_db_query = "SELECT lnTruth,B,Dmax,eta,mean_fpt,mode_fpt,median_fpt,mean_ss,mode_ss,median_ss FROM values_set,results WHERE results.values_set_id = values_set.id"
-spg_db_query_result=dbGetQuery(con,spg_db_query)
-
-for (i in 1:nrow(spg_db_query_result)) {
-  idx_Truth=which(Truth==spg_db_query_result[i,"lnTruth"])
-  idx_Realization=which(Realizations==spg_db_query_result[i,"B"])
-  idx_Dmax=which(Dmax==spg_db_query_result[i,"Dmax"])
-  idx_Eta=which(Eta==spg_db_query_result[i,"eta"])
-  #mean_fpt
-  dim_monster[idx_Truth,idx_Realization,idx_Dmax,idx_Eta,Results[1]]=spg_db_query_result[i,"mean_fpt"]
-  #mode_fpt
-  dim_monster[idx_Truth,idx_Realization,idx_Dmax,idx_Eta,Results[2]]=spg_db_query_result[i,"mode_fpt"]
-  #median_fpt
-  dim_monster[idx_Truth,idx_Realization,idx_Dmax,idx_Eta,Results[3]]=spg_db_query_result[i,"median_fpt"]
-  #mean_ss
-  dim_monster[idx_Truth,idx_Realization,idx_Dmax,idx_Eta,Results[4]]=spg_db_query_result[i,"mean_ss"]
-  #mode_ss
-  dim_monster[idx_Truth,idx_Realization,idx_Dmax,idx_Eta,Results[5]]=spg_db_query_result[i,"mode_ss"]
-  #median_ss
-  dim_monster[idx_Truth,idx_Realization,idx_Dmax,idx_Eta,Results[6]]=spg_db_query_result[i,"median_ss"]  
+pdf(file="output.pdf",title="Analysis")
+for (truthCounter in Truth) {
+  truthFlag=FALSE
+  for (DmaxCounter in Dmax) {
+    #rather stupid way to deal with the spg rounding of the first values of counters
+    currentDmax = paste(DmaxCounter,sep="")
+    if (as.integer(DmaxCounter)==DmaxCounter && !identical(DmaxCounter,Dmax[1])) 
+      currentDmax = paste(DmaxCounter,".0",sep="")
+      
+    for(EtaCounter in Eta) {
+      print(paste(truthCounter,",",DmaxCounter,",",EtaCounter,sep=""))
+      currentEta = paste(EtaCounter,sep="")
+      if (as.integer(EtaCounter)==EtaCounter && !identical(EtaCounter,Eta[1])) 
+        currentEta = paste(EtaCounter,".0",sep="")
+    
+      spg_db_query=paste("SELECT lnTruth,B,Dmax,eta,mean_fpt,mode_fpt,median_fpt,mean_ss,mode_ss,median_ss FROM values_set,results WHERE values_set.Dmax=",currentDmax," AND values_set.eta=",currentEta," AND values_set.lnTruth=",truthCounter," AND values_set.id=results.values_set_id",sep="")
+      spg_db_query_result=dbGetQuery(con,spg_db_query)
+      spg_db_result_nrows = nrow(spg_db_query_result)
+      if (spg_db_result_nrows > 0 ) {
+        truthFlag=TRUE
+        result_matrix[which(Eta == EtaCounter),which(Dmax == DmaxCounter)] = mean(as.numeric(spg_db_query_result[,"mode_fpt"]))     
+      }
+    }
+  }
+  if (truthFlag) {
+    plot.title=paste("Mode First Passage Time(15%), Truth=",truthCounter,sep="")
+    x.lab=bquote(paste(eta,sep=""))
+    y.lab=bquote(paste(D[max],sep=""))
+    image.plot(Eta,Dmax,result_matrix,xlab=x.lab,ylab=y.lab,cex.lab=2,cex.axis=2)
+  }
 }
+dev.off()
 
-
-
-
-dbClearResult(spg_db_query_result)
-spg_db_exceptions = dbGetException(con)
+#dbClearResult(spg_db_query_result)
+#spg_db_exceptions = dbGetException(con)
 dbDisconnect(con)
