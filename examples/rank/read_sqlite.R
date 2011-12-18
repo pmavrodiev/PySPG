@@ -8,9 +8,13 @@ setwd("~/Programs/PySPG/examples/rank")
 
 #Connect to the database
 spg_db = "results_rank.sqlite.copy"
+spg_db = "results_rank.sqlite"
 SQLite()
 drv = dbDriver("SQLite")
 con = dbConnect(drv,dbname=spg_db)
+dbListTables(con)
+
+
 
 #Set of parameters, must match parameters.dat
 Truth = seq(1,10,by=2); lTruth = length(Truth)
@@ -20,8 +24,8 @@ Eta = seq(1,25,by=0.5); lEta = length(Eta)
 #auxillary
 result_matrix = matrix(NA,length(Eta),length(Dmax))
 
-pdf(file="output.pdf",title="Analysis")
-for (truthCounter in Truth) {
+pdf(file="output-mean-ss.pdf",title="Analysis")
+for (truthCounter in c(1,3,5)) {
   truthFlag=FALSE
   for (DmaxCounter in Dmax) {
     #rather stupid way to deal with the spg rounding of the first values of counters
@@ -36,12 +40,17 @@ for (truthCounter in Truth) {
         currentEta = paste(EtaCounter,".0",sep="")
     
       spg_db_query=paste("SELECT lnTruth,B,Dmax,eta,mean_fpt,mode_fpt,median_fpt,mean_ss,mode_ss,median_ss FROM values_set,results WHERE values_set.Dmax=",currentDmax," AND values_set.eta=",currentEta," AND values_set.lnTruth=",truthCounter," AND values_set.id=results.values_set_id",sep="")
-      spg_db_query_result=dbGetQuery(con,spg_db_query)
+      spg_db_query_result=NULL
+      query=dbSendQuery(con,spg_db_query)
+      if (truthCounter !=5) {spg_db_query_result=fetch(query,n=(length(Realizations)-1))}
+      if (truthCounter == 5) {spg_db_query_result=fetch(query,n=47)}
       spg_db_result_nrows = nrow(spg_db_query_result)
       if (spg_db_result_nrows > 0 ) {
         truthFlag=TRUE
-        result_matrix[which(Eta == EtaCounter),which(Dmax == DmaxCounter)] = mean(as.numeric(spg_db_query_result[,"mode_fpt"]))     
+        data=as.numeric(spg_db_query_result[,"mean_ss"])
+        result_matrix[which(Eta == EtaCounter),which(Dmax == DmaxCounter)] = mean(data[data!=-1])     
       }
+      dbClearResult(query)
     }
   }
   if (truthFlag) {
