@@ -4,7 +4,7 @@ library("fields")
 library("RColorBrewer")
 library("graphics")
 
-setwd("~/Programs/PySPG/examples/rank")
+setwd("~/Programs/PySPGfork/PySPG/examples/rank")
 
 #Connect to the database
 spg_db = "results_rank.sqlite.copy"
@@ -24,9 +24,11 @@ Eta = seq(1,25,by=0.5); lEta = length(Eta)
 #auxillary
 result_matrix = matrix(NA,length(Eta),length(Dmax))
 
-pdf(file="output-mean-ss.pdf",title="Analysis")
-for (truthCounter in c(1,3,5)) {
+basefile = "mode-ss-truth-"
+
+for (truthCounter in c(5,7)) {
   truthFlag=FALSE
+  pdf(file=paste(basefile,truthCounter,".pdf",sep=""),title="Mode-Ftp")
   for (DmaxCounter in Dmax) {
     #rather stupid way to deal with the spg rounding of the first values of counters
     currentDmax = paste(DmaxCounter,sep="")
@@ -42,13 +44,15 @@ for (truthCounter in c(1,3,5)) {
       spg_db_query=paste("SELECT lnTruth,B,Dmax,eta,mean_fpt,mode_fpt,median_fpt,mean_ss,mode_ss,median_ss FROM values_set,results WHERE values_set.Dmax=",currentDmax," AND values_set.eta=",currentEta," AND values_set.lnTruth=",truthCounter," AND values_set.id=results.values_set_id",sep="")
       spg_db_query_result=NULL
       query=dbSendQuery(con,spg_db_query)
-      if (truthCounter !=5) {spg_db_query_result=fetch(query,n=(length(Realizations)-1))}
-      if (truthCounter == 5) {spg_db_query_result=fetch(query,n=47)}
+      if (truthCounter != 7) {spg_db_query_result=fetch(query,n=(length(Realizations)-1))}
+      if (truthCounter == 7) {spg_db_query_result=fetch(query,n=7)}
       spg_db_result_nrows = nrow(spg_db_query_result)
       if (spg_db_result_nrows > 0 ) {
         truthFlag=TRUE
-        data=as.numeric(spg_db_query_result[,"mean_ss"])
-        result_matrix[which(Eta == EtaCounter),which(Dmax == DmaxCounter)] = mean(data[data!=-1])     
+        data=as.numeric(spg_db_query_result[,"mode_ss"])
+        if (length(data[data != -1]) > 0) {
+          result_matrix[which(Eta == EtaCounter),which(Dmax == DmaxCounter)] = mean(data[data!=-1])     
+        }
       }
       dbClearResult(query)
     }
@@ -59,8 +63,9 @@ for (truthCounter in c(1,3,5)) {
     y.lab=bquote(paste(D[max],sep=""))
     image.plot(Eta,Dmax,result_matrix,xlab=x.lab,ylab=y.lab,cex.lab=2,cex.axis=2)
   }
+  dev.off()
 }
-dev.off()
+
 
 #dbClearResult(spg_db_query_result)
 #spg_db_exceptions = dbGetException(con)

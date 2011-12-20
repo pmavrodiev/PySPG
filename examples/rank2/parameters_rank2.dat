@@ -1,0 +1,7 @@
+@execute ctx-rank2.p4
+:deltat 0.01
+:N 100
+:Dmax 10 
+:eta 15
++lnTruth 1 10 2
++B 1 100 1
